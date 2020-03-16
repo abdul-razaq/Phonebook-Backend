@@ -4,15 +4,38 @@ const { validationResult } = require('express-validator');
 
 const AppError = require('../utils/AppError');
 
-
 exports.registerUser = async (req, res, next) => {
-  // check to see if there is no validation error
-  // if there is call the next error handling middleware in the stack
-  // if no error, check to see if the email address and the username has not been taken
-  // if it is taken throw an error, if not create a User model instance and pass in the user details, save the user to the database
-  // generate a token and send a response including the userId and token
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return next(new AppError("Validation failed, check input"), 421);
-  }
-}
+	const errors = validationResult(req);
+	if (!errors.isEmpty()) {
+		return next(
+			new AppError('Validation failed, check input'),
+			421,
+			(data = errors.array())
+		);
+	}
+	const { username, email, password, contacts } = req.body;
+	try {
+		const userExists = await User.findOne({ email, username });
+		if (userExists) {
+			throw new AppError('User already exists', 421);
+		}
+		let user;
+		if (contacts) {
+			user = new User({ username, email, password, contacts });
+		} else {
+			user = new User({ username, email, password });
+		}
+		await user.save();
+		const token = user.generateJWTToken(email, user._id);
+		res.status(201).json({
+			status: 'Success',
+			message: 'User created successfully!',
+			userId: user._id,
+			token,
+		});
+	} catch (error) {
+		if (error) {
+			next(error);
+		}
+	}
+};

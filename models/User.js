@@ -100,16 +100,16 @@ UserSchema.pre('save', async function(next) {
 	}
 });
 
-UserSchema.method.confirmPassword(async function(guessedPassword) {
+UserSchema.method.confirmPassword = async function(guessedPassword) {
 	const user = this;
 	return await bcrypt.compare(guessedPassword, user.password);
-});
+};
 
-UserSchema.method.generateJWTToken(async function(email, id) {
+UserSchema.method.generateJWTToken = async function(email, id) {
 	return jwt.sign({ email, userId: id }, 'thisismysecret', {
 		expiresIn: '10h',
 	});
-});
+};
 
 const User = mongoose.model('User', UserSchema);
 

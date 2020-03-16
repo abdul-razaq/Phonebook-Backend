@@ -16,7 +16,6 @@ app.use(morgan('dev'));
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-
 // Routes middlewares
 app.use('/auth', userRoutes);
 app.use(error404);
