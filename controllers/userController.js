@@ -2,6 +2,8 @@ const User = require('../models/User');
 
 const { validationResult } = require('express-validator');
 
+const AppError = require('../utils/AppError');
+
 
 exports.registerUser = async (req, res, next) => {
   // check to see if there is no validation error
@@ -10,5 +12,7 @@ exports.registerUser = async (req, res, next) => {
   // if it is taken throw an error, if not create a User model instance and pass in the user details, save the user to the database
   // generate a token and send a response including the userId and token
   const errors = validationResult(req);
-  
+  if (!errors.isEmpty()) {
+    return next(new AppError("Validation failed, check input"), 421);
+  }
 }

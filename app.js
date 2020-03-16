@@ -4,6 +4,8 @@ const morgan = require('morgan');
 const mongoose = require('mongoose');
 
 const userRoutes = require('./routes/userRouters');
+const error404 = require('./middlewares/error404');
+const generalError = require('./middlewares/generalError');
 
 const MONGODB_URI = 'mongodb://127.0.0.1:27017/contact-keeper';
 const app = express();
@@ -17,6 +19,8 @@ app.use(express.urlencoded({ extended: false }));
 
 // Routes middlewares
 app.use('/auth', userRoutes);
+app.use(error404);
+app.use(generalError);
 
 mongoose
 	.connect(MONGODB_URI, {
