@@ -22,11 +22,10 @@ const UserSchema = new Schema({
 	password: {
 		type: String,
 		required: true,
-		select: false,
 	},
 
 	dateJoined: {
-		type: String,
+		type: mongoose.SchemaTypes.Date,
 		required: true,
 		default: new Date().toLocaleString(),
 	},
@@ -75,7 +74,7 @@ const UserSchema = new Schema({
 			},
 			dateAdded: {
 				type: String,
-				default: new Date().toLocaleString(),
+				default: new Date().toString(),
 				immutable: true,
 			},
 			required: false,
@@ -100,12 +99,12 @@ UserSchema.pre('save', async function(next) {
 	}
 });
 
-UserSchema.method.confirmPassword = async function(guessedPassword) {
+UserSchema.methods.confirmPassword = async function(guessedPassword) {
 	const user = this;
 	return await bcrypt.compare(guessedPassword, user.password);
 };
 
-UserSchema.method.generateJWTToken = async function(email, id) {
+UserSchema.methods.generateJWTToken = function(email, id) {
 	return jwt.sign({ email, userId: id }, 'thisismysecret', {
 		expiresIn: '10h',
 	});
