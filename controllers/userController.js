@@ -23,7 +23,7 @@ exports.registerUser = async (req, res, next) => {
 		}
 		const user = new User({ username, email, password });
 		await user.save();
-		const token = user.generateJWTToken(email, user._id);
+		const token = await user.generateJWTToken(email, user._id);
 		res.status(201).json({
 			status: 'Success',
 			message: 'User created successfully!',
@@ -53,13 +53,39 @@ exports.loginUser = async (req, res, next) => {
 	if (!passwordMatched) {
 		return next(new AppError('Incorrect email or password', 403));
 	}
-	const token = user.generateJWTToken(email, userExists._id);
+	const token = await user.generateJWTToken(email, userExists._id);
 	res.status(200).json({
 		status: 'Success',
 		message: 'Authenticated successfully',
 		token,
 		userId: userExists._id,
 	});
+};
+
+exports.logoutUser = async (req, res, next) => {
+	try {
+		req.user.tokens = req.user.tokens.filter(token => {
+			return token.token !== req.token;
+		});
+		await req.user.save();
+	} catch (error) {
+		if (error) next(error);
+	}
+};
+
+exports.logoutAllSession = async (req, res, next) => {
+	try {
+		req.user.tokens = [];
+		await req.user.save();
+		res
+			.status(200)
+			.json({
+				status: 'Success',
+				message: 'Logged out of all sessions successfully',
+			});
+	} catch (error) {
+		if (error) next(error);
+	}
 };
 
 exports.updatePassword = async (req, res, next) => {
@@ -85,6 +111,22 @@ exports.updatePassword = async (req, res, next) => {
 		res
 			.status(200)
 			.json({ status: 'Success', message: 'Password updated successfully' });
+	} catch (error) {
+		if (error) next(error);
+	}
+};
+
+exports.deleteAccount = async (req, res, next) => {
+	try {
+		const user = await User.findByIdAndDelete(req.userId);
+		if (!user) {
+			return next(new AppError('No such user exists', 404));
+		}
+		res.status(200).json({
+			status: 'Success',
+			message: 'User deleted successfully!',
+			userId: user._id,
+		});
 	} catch (error) {
 		if (error) next(error);
 	}

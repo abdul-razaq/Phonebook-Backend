@@ -1,30 +1,29 @@
 const jwt = require('jsonwebtoken');
 
+const User = require('../models/User');
 const AppError = require('../utils/AppError');
 
-const verifyToken = authHeader => {
+module.exports = async (req, res, next) => {
+  const authHeader = req.get('authorization');
 	if (!authHeader) {
-		throw new AppError('Cannot Authenticate', 403);
+		throw new AppError('Please Authenticate', 401);
 	}
 	const token = authHeader.split(' ')[1];
-	let decodedToken;
+  let decodedToken;
 	try {
 		decodedToken = jwt.verify(token, 'thisismysecret');
+		const { userId } = decodedToken;
+    const user = await User.findOne({ _id: userId, 'tokens.token': token });
+		if (!user) {
+			throw new AppError('Please authenticate', 401);
+		}
+		req.userId = userId;
+		req.user = user;
+    req.token = token;
+    next()
 	} catch (error) {
 		if (error) {
 			next(error);
 		}
 	}
-	const { userId } = decodedToken;
-	return userId;
-};
-
-module.exports = (req, res, next) => {
-	const authHeader = req.get('authorization');
-	const userId = verifyToken(authHeader);
-	req.userId = userId;
-	if (!req.userId) {
-		return next(new AppError('Not authenticated!', 403));
-	}
-	next();
 };

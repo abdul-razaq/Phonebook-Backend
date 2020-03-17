@@ -94,4 +94,10 @@ userRoutes.post(
 	userControllers.updatePassword
 );
 
+userRoutes.delete('/delete', authenticate, userControllers.deleteAccount);
+
+userRoutes.post('/logout', authenticate, userControllers.logoutUser);
+
+userRoutes.post('/logout/all', authenticate, userControllers.logoutAllSession);
+
 module.exports = userRoutes;
