@@ -100,4 +100,6 @@ userRoutes.post('/logout', authenticate, userControllers.logoutUser);
 
 userRoutes.post('/logout/all', authenticate, userControllers.logoutAllSession);
 
+userRoutes.post('/update', authenticate, userControllers.updateAccount);
+
 module.exports = userRoutes;

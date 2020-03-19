@@ -32,7 +32,7 @@ exports.registerUser = async (req, res, next) => {
 		});
 	} catch (error) {
 		if (error) {
-			next(error);
+			return next(error);
 		}
 	}
 };
@@ -68,8 +68,11 @@ exports.logoutUser = async (req, res, next) => {
 			return token.token !== req.token;
 		});
 		await req.user.save();
+		res
+			.status(200)
+			.json({ status: 'Success', message: 'Logged out successfully' });
 	} catch (error) {
-		if (error) next(error);
+		if (error) return next(error);
 	}
 };
 
@@ -77,14 +80,12 @@ exports.logoutAllSession = async (req, res, next) => {
 	try {
 		req.user.tokens = [];
 		await req.user.save();
-		res
-			.status(200)
-			.json({
-				status: 'Success',
-				message: 'Logged out of all sessions successfully',
-			});
+		res.status(200).json({
+			status: 'Success',
+			message: 'Logged out of all sessions successfully',
+		});
 	} catch (error) {
-		if (error) next(error);
+		if (error) return next(error);
 	}
 };
 
@@ -112,7 +113,7 @@ exports.updatePassword = async (req, res, next) => {
 			.status(200)
 			.json({ status: 'Success', message: 'Password updated successfully' });
 	} catch (error) {
-		if (error) next(error);
+		if (error) return next(error);
 	}
 };
 
@@ -128,6 +129,31 @@ exports.deleteAccount = async (req, res, next) => {
 			userId: user._id,
 		});
 	} catch (error) {
-		if (error) next(error);
+		if (error) return next(error);
+	}
+};
+
+exports.updateAccount = async (req, res, next) => {
+	const { username, email } = req.body;
+	const user = req.user;
+	try {
+		if (username && !email) {
+			user.username = username;
+			await user.save();
+		} else if (!username && email) {
+			user.email = email;
+			await user.save();
+		} else if (username && email) {
+			user.username = username;
+			user.email = email;
+			await user.save();
+		} else {
+			throw new AppError('Validation failed!', 401);
+		}
+		res
+			.status(200)
+			.json({ status: 'Success', message: 'Account updated successfully' });
+	} catch (error) {
+		if (error) return next(error);
 	}
 };
