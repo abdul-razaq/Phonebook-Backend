@@ -46,34 +46,68 @@ const UserSchema = new Schema({
 				type: String,
 				required: true,
 				trim: true,
+				index: true,
 			},
 			lastname: {
 				type: String,
 				required: true,
 				trim: true,
+				index: true,
 			},
 			email: {
 				type: String,
 				required: true,
 				trim: true,
+				lowercase: true,
+				index: true,
 			},
 			nickname: {
 				type: String,
 				required: false,
 				trim: true,
-				lowercase: true,
+				index: true,
 			},
 			socialAccounts: {
-				type: Object,
-				required: false,
+				twitter: {
+					type: String,
+					required: false,
+				},
+				facebook: {
+					type: String,
+					required: false,
+				},
+				instagram: {
+					type: String,
+					required: false,
+				},
+				linkedin: {
+					type: String,
+					required: false,
+				},
+				reddit: {
+					type: String,
+					required: false,
+				},
 			},
 			phoneNumbers: {
-				type: Array,
-				required: true,
+				home: {
+					type: Number,
+					required: false,
+				},
+				work: {
+					type: Number,
+					required: false,
+				},
 			},
 			addresses: {
-				type: Object,
-				required: false,
+				home: {
+					type: String,
+					required: false,
+				},
+				work: {
+					type: String,
+					required: false,
+				},
 			},
 			relationship: {
 				type: String,
@@ -81,11 +115,12 @@ const UserSchema = new Schema({
 				default: 'friend',
 				trim: true,
 				lowercase: true,
+				index: true,
 			},
 			dateAdded: {
 				type: String,
 				default: new Date().toString(),
-				immutable: true,
+				immutable: false,
 			},
 			required: false,
 		},

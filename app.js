@@ -4,6 +4,7 @@ const morgan = require('morgan');
 const mongoose = require('mongoose');
 
 const userRoutes = require('./routes/userRouters');
+const contactsRoutes = require('./routes/contactsRouters');
 const error404 = require('./middlewares/error404');
 const generalError = require('./middlewares/generalError');
 
@@ -18,6 +19,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 // Routes middlewares
 app.use('/auth', userRoutes);
+app.use(contactsRoutes);
 app.use(error404);
 app.use(generalError);
 

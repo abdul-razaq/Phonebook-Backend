@@ -16,7 +16,6 @@ const validationMiddleware = [
 		.notEmpty()
 		.trim()
 		.isLength({ min: 3 })
-		.notEmpty()
 		.customSanitizer(value => {
 			return value.toLowerCase();
 		}),
