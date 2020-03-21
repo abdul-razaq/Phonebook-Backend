@@ -29,11 +29,29 @@ const contactsValidationMiddleware = [
 		.isLength({ min: 5 }),
 ];
 
+contactsRoutes.get(
+	'/contacts/',
+	authenticate,
+	contactsControllers.getAllContacts
+);
+
 contactsRoutes.post(
 	'/contacts',
 	authenticate,
 	contactsValidationMiddleware,
 	contactsControllers.createContact
+);
+
+contactsRoutes.delete(
+	'/contacts/:contactId',
+	authenticate,
+	contactsControllers.deleteContact
+);
+
+contactsRoutes.get(
+	'/contacts/:contactId',
+	authenticate,
+	contactsControllers.getContact
 );
 
 module.exports = contactsRoutes;
