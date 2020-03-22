@@ -30,6 +30,12 @@ const contactsValidationMiddleware = [
 ];
 
 contactsRoutes.get(
+	'/contacts/:contactId',
+	authenticate,
+	contactsControllers.getAContact
+);
+
+contactsRoutes.get(
 	'/contacts/',
 	authenticate,
 	contactsControllers.getAllContacts
@@ -48,10 +54,16 @@ contactsRoutes.delete(
 	contactsControllers.deleteContact
 );
 
-contactsRoutes.get(
-	'/contacts/:contactId',
+contactsRoutes.delete(
+	'/contacts/',
 	authenticate,
-	contactsControllers.getContact
+	contactsControllers.deleteAllContacts
+);
+
+contactsRoutes.get(
+	'/contacts/search',
+	authenticate,
+	contactsControllers.searchContact
 );
 
 module.exports = contactsRoutes;

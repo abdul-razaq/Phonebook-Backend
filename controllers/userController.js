@@ -46,7 +46,7 @@ exports.loginUser = async (req, res, next) => {
 		userExists = await User.findOne({ email });
 	}
 	if (!userExists) {
-		return next(new AppError('No user with this email address registered!', 422));
+		return next(new AppError('No user was found!', 422));
 	}
 	const user = userExists;
 	const passwordMatched = await user.confirmPassword(password);
