@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const morgan = require('morgan');
@@ -8,7 +9,7 @@ const contactsRoutes = require('./routes/contactsRouters');
 const error404 = require('./middlewares/error404');
 const generalError = require('./middlewares/generalError');
 
-const MONGODB_URI = 'mongodb://127.0.0.1:27017/contact-keeper';
+const MONGODB_URI = process.env.MONGODB_URI;
 const app = express();
 
 app.set('port', process.env.PORT || 3000);

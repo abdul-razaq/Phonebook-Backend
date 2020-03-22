@@ -151,7 +151,7 @@ UserSchema.methods.confirmPassword = async function(guessedPassword) {
 
 UserSchema.methods.generateJWTToken = async function(email, id) {
 	const user = this;
-	const token = jwt.sign({ email, userId: id }, 'thisismysecret', {
+	const token = jwt.sign({ email, userId: id }, process.env.JWT_SECRET, {
 		expiresIn: '10h',
 	});
 	user.tokens = user.tokens.concat({ token });
