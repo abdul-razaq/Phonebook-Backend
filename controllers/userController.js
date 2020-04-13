@@ -17,8 +17,9 @@ exports.registerUser = async (req, res, next) => {
 	}
 	const { username, email, password } = req.body;
 	try {
-		const userExists = await User.findOne({ email, username });
-		if (userExists) {
+		const userExistsByEmail = await User.findOne({ email });
+		const userExistsByUsername = await User.findOne({ username });
+		if (userExistsByEmail || userExistsByUsername) {
 			throw new AppError('User already exists', 421);
 		}
 		const user = new User({ username, email, password });
@@ -46,7 +47,12 @@ exports.loginUser = async (req, res, next) => {
 		userExists = await User.findOne({ email });
 	}
 	if (!userExists) {
-		return next(new AppError('No user was found!', 422));
+		return next(
+			new AppError(
+				'No user was found!, Email address or password invalid!',
+				422
+			)
+		);
 	}
 	const user = userExists;
 	const passwordMatched = await user.confirmPassword(password);
@@ -64,7 +70,7 @@ exports.loginUser = async (req, res, next) => {
 
 exports.logoutUser = async (req, res, next) => {
 	try {
-		req.user.tokens = req.user.tokens.filter(token => {
+		req.user.tokens = req.user.tokens.filter((token) => {
 			return token.token !== req.token;
 		});
 		await req.user.save();
