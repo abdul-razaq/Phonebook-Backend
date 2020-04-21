@@ -119,7 +119,7 @@ const UserSchema = new Schema({
 			},
 			dateAdded: {
 				type: String,
-				default: new Date().toString(),
+				default: new Date().toUTCString(),
 				immutable: false,
 			},
 			required: false,

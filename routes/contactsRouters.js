@@ -36,12 +36,12 @@ contactsRoutes.get(
 );
 
 contactsRoutes.get(
-	'/contacts/',
+	'/contacts',
 	authenticate,
 	contactsControllers.getAllContacts
 );
 
-contactsRoutes.post(
+contactsRoutes.put(
 	'/contacts',
 	authenticate,
 	contactsValidationMiddleware,
@@ -55,7 +55,7 @@ contactsRoutes.delete(
 );
 
 contactsRoutes.delete(
-	'/contacts/',
+	'/contacts',
 	authenticate,
 	contactsControllers.deleteAllContacts
 );

@@ -49,7 +49,7 @@ exports.loginUser = async (req, res, next) => {
 	if (!userExists) {
 		return next(
 			new AppError(
-				'No user was found!, Email address or password invalid!',
+				'Email address or password invalid!',
 				422
 			)
 		);

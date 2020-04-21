@@ -5,18 +5,17 @@ const AppError = require('../utils/AppError');
 exports.createContact = async (req, res, next) => {
 	const user = req.user;
 	const errors = validationResult(req);
-
 	if (!errors.isEmpty()) {
 		return next(
 			new AppError(
 				'Validation error, check user input',
-				401,
+				422,
 				(data = errors.array())
 			)
 		);
 	}
 	try {
-		user.contacts.forEach(contact => {
+		user.contacts.forEach((contact) => {
 			if (
 				contact.firstname === req.body.firstname &&
 				contact.lastname === req.body.lastname &&
@@ -36,12 +35,10 @@ exports.createContact = async (req, res, next) => {
 };
 
 exports.deleteContact = async (req, res, next) => {
-	const { contactId } = req.params;
 	try {
-		const contacts = req.user.contacts.filter(contact => {
-			contact._id.toString() !== contactId.toString();
+		req.user.contacts = req.user.contacts.filter((contact) => {
+			return contact._id.toString() !== req.params.contactId.toString();
 		});
-		req.user.contacts = contacts;
 		await req.user.save();
 		res
 			.status(200)
@@ -54,7 +51,7 @@ exports.deleteContact = async (req, res, next) => {
 exports.getAContact = (req, res, next) => {
 	const { contactId } = req.params;
 	try {
-		const contactDetails = req.user.contacts.filter(contact => {
+		const contactDetails = req.user.contacts.filter((contact) => {
 			return contact._id.toString() === contactId.toString();
 		});
 		if (!contactDetails.length) {
@@ -74,7 +71,7 @@ exports.getAllContacts = (req, res, next) => {
 	const relationship = req.query.relationship;
 	let fetchedContacts;
 	if (relationship) {
-		const contacts = req.user.contacts.filter(contact => {
+		const contacts = req.user.contacts.filter((contact) => {
 			return contact.relationship === relationship.toString();
 		});
 		fetchedContacts = contacts;
@@ -82,7 +79,11 @@ exports.getAllContacts = (req, res, next) => {
 		fetchedContacts = req.user.contacts;
 	}
 	if (!fetchedContacts.length) {
-		throw new AppError('This user has no contact', 404);
+		return res.status(204).json({
+			status: 'Error',
+			message: 'User has no contact yet',
+			data: fetchedContacts,
+		});
 	}
 	res.status(200).json({
 		status: 'Success',
@@ -95,7 +96,7 @@ exports.deleteAllContacts = async (req, res, next) => {
 	const relationship = req.query.relationship;
 	let remainingContacts;
 	if (relationship) {
-		const contacts = req.user.contacts.filter(contact => {
+		const contacts = req.user.contacts.filter((contact) => {
 			return contact.relationship !== relationship.toString();
 		});
 		remainingContacts = contacts;
@@ -111,8 +112,8 @@ exports.deleteAllContacts = async (req, res, next) => {
 
 exports.searchContact = (req, res, next) => {
 	const { firstname, lastname, nickname, email } = req.query;
-	console.log(firstname, lastname, nickname, email)
-	const contacts = req.user.contacts.filter(contact => {
+	console.log(firstname, lastname, nickname, email);
+	const contacts = req.user.contacts.filter((contact) => {
 		return (
 			contact.firstname === firstname.toString() ||
 			contact.lastname === lastname.toString() ||
